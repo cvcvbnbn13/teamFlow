@@ -9,6 +9,7 @@ import { AnimatedGroup } from "@/components/ui/animated-group";
 import { HeroHeader } from "./header";
 import BackgroundImage from "@/public/night-background.webp";
 import HeroDark from "@/public/screenshots-dark.webp";
+import HeroLight from "@/public/screenshots-light.webp";
 import ArcjetLogo from "@/public/arcjet.webp";
 import KindeLogo from "@/public/kinde.webp";
 import MotionLogo from "@/public/motion.webp";
@@ -198,6 +199,13 @@ export default function HeroSection() {
                   <Image
                     className="bg-background aspect-15/8 relative hidden rounded-2xl dark:block object-cover object-top"
                     src={HeroDark}
+                    alt="app screen"
+                    width="2700"
+                    height="1440"
+                  />
+                  <Image
+                    className="bg-background aspect-15/8 relative block rounded-2xl dark:hidden object-cover object-top"
+                    src={HeroLight}
                     alt="app screen"
                     width="2700"
                     height="1440"
