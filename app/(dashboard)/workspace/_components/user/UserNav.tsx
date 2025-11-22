@@ -11,7 +11,7 @@ import {
 import { UserAvatar } from './UserAvatar'
 import { defaultUser } from '../../const'
 import { CreditCard, LogOut, User } from 'lucide-react'
-import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/components'
+import { LogoutLink, PortalLink } from '@kinde-oss/kinde-auth-nextjs/components'
 
 export const UserNav = () => {
   return (
@@ -42,13 +42,17 @@ export const UserNav = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <User />
-            Account
+          <DropdownMenuItem asChild>
+            <PortalLink>
+              <User />
+              Account
+            </PortalLink>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
+          <DropdownMenuItem asChild>
+            <PortalLink>
+              <CreditCard />
+              Billing
+            </PortalLink>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
