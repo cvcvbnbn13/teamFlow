@@ -1,43 +1,53 @@
-import { KindeOrganization, KindeUser } from '@kinde-oss/kinde-auth-nextjs'
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { os } from '@orpc/server'
-import { z } from 'zod'
+import { KindeOrganization, KindeUser } from "@kinde-oss/kinde-auth-nextjs";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { z } from "zod";
+import { base } from "../middlewares/base";
+import { requiredAuthMiddleware } from "../middlewares/auth";
+import { requiredWorkspaceMiddleware } from "../middlewares/workspace";
 
 const WorkspaceSchema = z.object({
   id: z.string(),
   name: z.string(),
   avatar: z.string(),
-})
+});
 
-const UserSchema = z.custom<KindeUser<Record<string, unknown>>>()
+const UserSchema = z.custom<KindeUser<Record<string, unknown>>>();
 
-const CurrentWorkspaceSchema = z.custom<KindeOrganization<unknown>>()
+const CurrentWorkspaceSchema = z.custom<KindeOrganization<unknown>>();
 
 const ListWorkspacesResponseSchema = z.object({
   workspaces: z.array(WorkspaceSchema),
   user: UserSchema,
   currentWorkspace: CurrentWorkspaceSchema,
-})
+});
 
-export const listWorkspaces = os
+export const listWorkspaces = base
+  .use(requiredAuthMiddleware)
+  .use(requiredWorkspaceMiddleware)
   .route({
-    method: 'GET',
-    path: '/workspaces',
-    summary: 'List all workspaces',
-    tags: ['workspace'],
+    method: "GET",
+    path: "/workspaces",
+    summary: "List all workspaces",
+    tags: ["workspace"],
   })
   .input(z.void())
   .output(ListWorkspacesResponseSchema)
-  .handler(async ({ input }) => {
-    const { getUserOrganizations } = getKindeServerSession()
+  .handler(async ({ context, errors }) => {
+    const { getUserOrganizations } = getKindeServerSession();
 
-    const organizations = await getUserOrganizations()
+    const organizations = await getUserOrganizations();
+
+    if (!organizations) {
+      throw errors.FORBIDDEN;
+    }
 
     return {
-      workspaces: organizations?.orgs.map(org => ({
+      workspaces: organizations?.orgs.map((org) => ({
         id: org.code,
-        name: org.name,
-        avatar: org.name?.charAt(0),
+        name: org.name ?? "My Workspace",
+        avatar: org.name?.charAt(0) ?? "FS",
       })),
-    }
-  })
+      user: context.user,
+      currentWorkspace: context.workspace,
+    };
+  });
